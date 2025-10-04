@@ -1,0 +1,266 @@
+<!-- ======== HERO ======== -->
+<section
+  style="
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    overflow: clip;
+    background:
+      radial-gradient(70% 50% at 50% 0%, rgba(99,102,241,.20) 0%, transparent 60%),
+      radial-gradient(60% 40% at 100% 20%, rgba(16,185,129,.18) 0%, transparent 60%),
+      radial-gradient(50% 40% at 0% 100%, rgba(59,130,246,.20) 0%, transparent 70%),
+      linear-gradient(180deg, #0b0f17 0%, #0b0f17 30%, #0e1220 100%);
+    color: #e8eefc;
+  "
+  aria-label="Hero"
+>
+  <!-- Grid glow -->
+  <svg
+    width="1320"
+    height="1320"
+    viewBox="0 0 1320 1320"
+    style="
+      position: absolute;
+      inset: auto auto -35% -20%;
+      opacity: .18;
+      transform: rotate(8deg);
+      filter: blur(0.3px);
+    "
+    aria-hidden="true"
+  >
+    <defs>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#7aa2ff" stroke-opacity=".35" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1320" height="1320" fill="url(#grid)"/>
+  </svg>
+
+  <!-- Hero content -->
+  <div style="max-width: 1120px; width: 100%; padding: 64px 20px; position: relative; z-index: 1;">
+<!-- TOP NAV -->
+
+<header class="top-nav" role="banner">
+  <div class="nav-inner">
+    <a class="brand" href="/" aria-label="Visionary Studios – home">
+      <img src="assets/logo/NoWordsNoBackgroundLogo.png" alt="" class="logo" />
+    </a>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-label="Open menu"
+      aria-controls="mobile-menu"
+      [attr.aria-expanded]="mobileOpen"
+      [class.is-open]="mobileOpen"
+      (click)="toggleMobile()"
+    >
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Blur overlay (only when open) -->
+  <div class="menu-overlay" *ngIf="mobileOpen" (click)="closeMobile()" aria-hidden="true"></div>
+
+  <!-- Universal dropdown menu -->
+  <nav id="mobile-menu" class="mobile-menu" [class.open]="mobileOpen" aria-label="Main">
+    <a (click)="closeMobile()" href="#talking">Work</a>
+    <a (click)="closeMobile()" href="#team">About</a>
+    <a (click)="closeMobile()" href="#contact">Contact</a>
+  </nav>
+</header>
+
+
+
+<!-- ⬇️ overlay sits OUTSIDE the header -->
+<div
+  *ngIf="mobileOpen"
+  class="menu-overlay"
+  (click)="closeMobile()"
+  aria-hidden="true"
+></div>
+
+
+
+
+
+
+
+
+
+    <div style="display:grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items:center;">
+      <!-- Left: copy -->
+      <div>
+<!-- Headline with typewriter -->
+<h1 class="h1 typewriter" role="status" aria-live="polite">
+  <span #tw></span>
+  <span class="typewriter__caret" aria-hidden="true"></span>
+</h1>
+
+
+
+        <p style="max-width: 56ch; color:#b7c5ff; margin:0 0 28px; font-size: clamp(14px, 2.2vw, 18px);">
+          At Visionary Studio, we design and build high-performance sites & apps with Angular, TypeScript, and modern
+          UX—clean code, accessible UI, and buttery micro-interactions.
+        </p>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a
+            href="#talking"
+            style="display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg,#7aa2ff 0%,#5ef1c0 100%); color:#0b0f17; text-decoration:none; font-weight:600; box-shadow:0 12px 32px rgba(122,162,255,.25);"
+            >See my work</a
+          >
+
+
+        </div>
+
+        <div style="display:flex; gap:16px; margin-top:22px; color:#93a7ff; font-size:13px; opacity:.9;">
+          <span>• Angular</span><span>• TypeScript</span><span>• Tailwind</span><span>• Node</span>
+        </div>
+      </div>
+
+      <!-- Right: preview card -->
+<!-- Whole card tilts smoothly without breaking the rounded corners -->
+<!-- Right: preview card (tilt shell only; NO extra window bar) -->
+
+
+    </div>
+  </div>
+
+  <!-- Soft vignette at bottom -->
+  <div
+    style="
+      position:absolute; left:0; right:0; bottom:-1px; height:160px;
+      background: linear-gradient(0deg, #0e1220 0%, rgba(14,18,32,0) 100%);
+    "
+    aria-hidden="true"
+  ></div>
+</section>
+<!-- ======== WORK SHOWCASE ======== -->
+<section id="talking" class="work-showcase" aria-label="Let my work do the talking">
+  <!-- soft grid / glow background -->
+  <svg class="bg-grid" width="1320" height="1320" viewBox="0 0 1320 1320" aria-hidden="true">
+    <defs>
+      <pattern id="work-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#7aa2ff" stroke-opacity=".28" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1320" height="1320" fill="url(#work-grid)"/>
+  </svg>
+
+  <div class="work-inner">
+    <header class="work-head">
+      <h2 class="work-title">Let Our Work Do The Talking</h2>
+      <p class="work-sub">Real projects, real UX. Tap the tabs to switch between demos.</p>
+    </header>
+
+    <!-- Centered preview (uses your existing component) -->
+    <div class="work-frame reveal">
+      <app-browser-tabs-preview
+        [title]="'Live preview'"
+        [height]="420"
+        [items]="previewItems">
+      </app-browser-tabs-preview>
+    </div>
+    <app-contact-drawer #drawer></app-contact-drawer>
+
+<!-- Any button/link that should open the drawer -->
+
+
+    <div class="work-cta">
+     <a
+  href
+  class="btn-ghost"
+  (click)="$event.preventDefault(); drawer.toggle()"
+>
+  Start a project
+</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======== About The Team      ======== -->
+<section id="team" class="team">
+  <div class="wrap">
+    <h2 class="team__title">Meet the Team</h2>
+    <div class="team__grid">
+
+      <!-- Phil -->
+      <article class="member">
+        <img src="assets/team/Phil_Profile.png" alt="Phil Askander" class="member__photo" />
+        <h3 class="member__name">Phil Askander</h3>
+        <p class="member__role">Software Engineer</p>
+        <p class="member__bio">
+          Phil earned his Master’s in Computer Science from Northeastern University. 
+          He loves basketball, going for runs, and has a passion for turning your 
+          dream site into reality with clean, performant code.
+        </p>
+        <ul class="tags">
+          <li>Angular</li>
+          <li>Web Development</li>
+          <li>UX Engineering</li>
+        </ul>
+      </article>
+
+      <!-- Justin -->
+      <article class="member">
+        <img src="assets/team/Justin_Profile.png" alt="Justin Hanna" class="member__photo" />
+        <h3 class="member__name">Justin Hanna</h3>
+        <p class="member__role">Network Engineer</p>
+        <p class="member__bio">
+          Justin is a Network Engineer with a strong foundation in infrastructure 
+          and networking. He enjoys watching football, golfing, and ensuring 
+          systems run seamlessly at scale.
+        </p>
+        <ul class="tags">
+          <li>Networking</li>
+          <li>Infrastructure</li>
+          <li>Cybersecurity</li>
+        </ul>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ======== CONTACT CTA ======== -->
+<section id="contact" style="background:#0e1220; color:#e8eefc; padding: 0 20px 80px;">
+  <div
+    class="reveal-up" 
+    style="
+      max-width:1120px; margin:0 auto; border-radius:24px; overflow:hidden;
+      border:1px solid rgba(184,199,255,.18);
+      background:
+        radial-gradient(70% 120% at 10% 0%, rgba(94,241,192,.12) 0%, transparent 60%),
+        radial-gradient(100% 160% at 100% 100%, rgba(122,162,255,.12) 0%, transparent 60%),
+        rgba(255,255,255,.04);
+      backdrop-filter: blur(6px) saturate(120%);
+    "
+  >
+    <div style="padding:24px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;">
+      <div>
+        <h3 style="margin:0 0 6px;">Let’s build something great</h3>
+        <p style="margin:0; color:#b7c5ff;">Email <a href="mailto:you@yourname.dev" style="color:#9ac1ff;"></a> or send a brief.</p>
+      </div>
+      <a
+        href="mailto:you@yourname.dev?subject=Project%20Inquiry"
+        style="display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg,#7aa2ff 0%,#5ef1c0 100%); color:#0b0f17; text-decoration:none; font-weight:600; box-shadow:0 12px 32px rgba(122,162,255,.25);"
+      >Contact me</a>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ======== FOOTER ======== -->
+<footer style="background:#0e1220; color:#8ea0d7; padding: 32px 20px; border-top:1px solid rgba(184,199,255,.12);">
+  <div style="max-width:1120px; margin:0 auto; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">
+  </div>
+</footer>
+
+<app-contact-drawer></app-contact-drawer>
+

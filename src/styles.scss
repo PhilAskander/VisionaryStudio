@@ -1,0 +1,9 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0e1220; /* match site bg */
+   scroll-behavior: smooth;
+}
+*, *::before, *::after { box-sizing: border-box; }
+img { display: block; }
+/* You can add global styles to this file, and also import other style files */

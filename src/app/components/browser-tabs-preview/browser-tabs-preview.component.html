@@ -1,0 +1,70 @@
+<div class="preview">
+  <!-- Browser bar -->
+  <div class="window-bar">
+    <span class="dot dot--r"></span>
+    <span class="dot dot--y"></span>
+    <span class="dot dot--g"></span>
+    <strong class="title">{{ title }}</strong>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist" aria-label="Project previews">
+    <button
+      *ngFor="let it of items; let i = index"
+      class="tab"
+      [class.is-active]="it.id === activeId()"
+      role="tab"
+      type="button"
+      [attr.aria-selected]="it.id === activeId()"
+      [attr.aria-controls]="'panel-' + it.id"
+      [id]="'tab-' + it.id"
+      (click)="select(it.id)"
+    >
+      {{ it.label }}
+    </button>
+  </div>
+
+  <!-- Panels -->
+  <div
+    *ngFor="let it of items"
+    class="panel"
+    role="tabpanel"
+    [hidden]="it.id !== activeId()"
+    [id]="'panel-' + it.id"
+    [attr.aria-labelledby]="'tab-' + it.id"
+    [style.--h.px]="height">
+
+    <!-- Video -->
+ <video
+  *ngIf="it.video && !prefersReducedMotion"
+  class="media"
+  [src]="it.video"
+  [poster]="it.poster || it.image"
+  [attr.aria-label]="it.alt || it.label"
+  autoplay
+  muted
+  playsinline
+  loop
+  preload="metadata"
+  (canplay)="forcePlay($event)"
+>
+  <source [src]="it.video" type="video/mp4" />
+</video>
+
+    <!-- Image fallback -->
+    <img
+      *ngIf="!it.video || prefersReducedMotion"
+      class="media"
+      [src]="it.image || it.poster"
+      [alt]="it.alt || it.label"
+      decoding="async"
+      loading="eager"
+      fetchpriority="high"
+    />
+
+    <!-- Optional CTA -->
+    <a *ngIf="it.href" class="cta" [href]="it.href" target="_blank" rel="noopener">
+      Open live site →
+    </a>
+  </div>
+</div>

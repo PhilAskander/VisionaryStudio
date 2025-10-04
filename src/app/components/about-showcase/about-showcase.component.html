@@ -1,0 +1,89 @@
+<section class="about-card"
+         (mouseenter)="onMouseEnter()"
+         (mouseleave)="onMouseLeave()"
+         tabindex="0" aria-label="About showcase">
+
+  <!-- Card chrome -->
+  <header class="head">
+    <h2>About</h2>
+    <span class="pill">Angular · TypeScript · UX</span>
+    <div class="spacer"></div>
+    <div class="status" *ngIf="active() === 0">Overview</div>
+    <div class="status" *ngIf="active() === 1">Core stack</div>
+    <div class="status" *ngIf="active() === 2">Availability</div>
+  </header>
+
+  <!-- Slides -->
+  <div class="slides">
+    <!-- 0: Overview -->
+    <div class="slide" [class.is-active]="active() === 0">
+      <p class="lede">
+        I turn ambiguous product ideas into shippable, performant features.
+        Angular + TypeScript focused, with a love for micro-interactions,
+        accessibility, and maintainable component APIs.
+      </p>
+
+      <ul class="checks">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg> Angular, RxJS, Signals</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg> Node & REST/GraphQL</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg> Tailwind & design systems</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg> Vercel / Firebase / AWS</li>
+      </ul>
+
+      <div class="stats">
+        <div class="stat"><span class="num">5+</span><span class="lbl">yrs exp</span></div>
+        <div class="stat"><span class="num">30+</span><span class="lbl">projects</span></div>
+        <div class="stat"><span class="num">95+</span><span class="lbl">Lighthouse</span></div>
+      </div>
+    </div>
+
+    <!-- 1: Core stack -->
+    <div class="slide" [class.is-active]="active() === 1">
+      <div class="row">
+        <div class="row__label">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M5 6h14M5 18h14"/></svg>
+          Core stack
+        </div>
+        <div class="chips">
+          <span class="chip">Angular</span>
+          <span class="chip">TypeScript</span>
+          <span class="chip">Tailwind</span>
+        </div>
+      </div>
+      <p class="hint">Production-first: typed APIs, accessible UI, and perf budgets.</p>
+    </div>
+
+    <!-- 2: Availability -->
+    <div class="slide" [class.is-active]="active() === 2">
+      <div class="row">
+        <div class="row__label">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7z"/></svg>
+          Availability
+        </div>
+        <div class="options">
+          <strong>Freelance</strong>
+          <span class="dot">•</span>
+          <strong>Contract</strong>
+        </div>
+      </div>
+
+      <div class="meter">
+        <div class="meter__bg"></div>
+        <div class="meter__fg" style="--pct: 70%"></div>
+      </div>
+      <p class="hint right">Taking 1–2 new projects</p>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <footer class="controls" aria-label="About slides">
+    <button class="nav prev" type="button" (click)="prev()" aria-label="Previous">←</button>
+    <div class="dots">
+      <button *ngFor="let i of dots(); let idx = index"
+              [class.is-active]="idx === active()"
+              (click)="go(idx)" [attr.aria-label]="'Go to slide ' + (idx+1)">
+      </button>
+    </div>
+    <button class="nav next" type="button" (click)="next()" aria-label="Next">→</button>
+  </footer>
+</section>

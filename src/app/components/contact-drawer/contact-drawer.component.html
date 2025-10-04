@@ -1,0 +1,78 @@
+<!-- Floating CTA button -->
+<button
+  class="fab"
+  type="button"
+  aria-haspopup="dialog"
+  [attr.aria-expanded]="open()"
+  (click)="toggle()">
+  Book us
+</button>
+
+<!-- Backdrop -->
+<div
+  class="backdrop"
+  *ngIf="open()"
+  (click)="close()"
+  aria-hidden="true"></div>
+
+<!-- Slide-over drawer -->
+<aside
+  class="drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Contact Visionary Studios"
+  [class.is-open]="open()"
+>
+  <header class="drawer__head">
+    <h3>Let’s build something great</h3>
+    <button class="icon-btn" type="button" (click)="close()" aria-label="Close">✕</button>
+  </header>
+
+  <p class="drawer__sub">Every great project starts with a conversation. Use the form below to tell us what you’re working on, your challenges, and what success looks like to you. The more details you provide, the better we can tailor our approach. Expect to hear back from us within one business day with ideas on how we can help.</p>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="form">
+  <div class="grid">
+    <label class="field" [class.has-error]="form.controls.firstName.touched && form.controls.firstName.invalid">
+      <span>First name</span>
+      <input formControlName="firstName" autocomplete="given-name" />
+      <small [class.visible]="form.controls.firstName.touched && form.controls.firstName.invalid">
+        Required
+      </small>
+    </label>
+
+    <label class="field" [class.has-error]="form.controls.lastName.touched && form.controls.lastName.invalid">
+      <span>Last name</span>
+      <input formControlName="lastName" autocomplete="family-name" />
+      <small [class.visible]="form.controls.lastName.touched && form.controls.lastName.invalid">
+        Required
+      </small>
+    </label>
+  </div>
+
+  <label class="field" [class.has-error]="form.controls.email.touched && form.controls.email.invalid">
+    <span>Email</span>
+    <input formControlName="email" inputmode="email" autocomplete="email" />
+    <small [class.visible]="form.controls.email.touched && form.controls.email.invalid">
+      Enter a valid email
+    </small>
+  </label>
+
+  <label class="field" [class.has-error]="form.controls.message.touched && form.controls.message.invalid">
+    <span>Message</span>
+    <textarea formControlName="message" rows="6" placeholder="Project goals, timeline, budget range…"></textarea>
+    <small [class.visible]="form.controls.message.touched && form.controls.message.invalid">
+      Min 10 characters
+    </small>
+  </label>
+
+  <div class="actions">
+    <button class="primary" type="submit">Send message</button>
+    <button class="ghost" type="button" (click)="close()">Cancel</button>
+  </div>
+</form>
+
+
+  <footer class="drawer__foot">
+    <span class="dot"></span> Response time ~24h
+  </footer>
+</aside>
