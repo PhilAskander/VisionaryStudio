@@ -1,6 +1,6 @@
 import {
   Component, HostBinding, OnInit, AfterViewInit, OnDestroy,
-  ViewChild, ElementRef, Inject, NgZone, PLATFORM_ID
+  ViewChild, ElementRef, Inject, NgZone, PLATFORM_ID, signal
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { TiltDirective } from './tilt.directive';
@@ -13,7 +13,7 @@ import { ContactDrawerComponent } from './components/contact-drawer/contact-draw
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TiltDirective, BrowserTabsPreviewComponent, CommonModule, AboutCapsuleComponent, ContactDrawerComponent], 
+  imports: [TiltDirective, BrowserTabsPreviewComponent, CommonModule, AboutCapsuleComponent, ContactDrawerComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
@@ -21,6 +21,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostBinding('class') hostClass = 'theme-dark';
 
   year = new Date().getFullYear();
+
+  // Splash + site fade-in
+  splash = signal(true);     // controls .splash visibility
+  siteReady = signal(false); // controls .site fade-in
 
   // mobile nav (unchanged)
   mobileOpen = false;
@@ -36,24 +40,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     'Beautiful, accessible, production-ready frontends.'
   ];
 
-
-
-previewItems = [
-  {
-    id: 'barbershop',
-    label: 'Barbershop',
-    poster: 'assets/previews/barbershop-poster.jpg',
-    video:  'assets/previews/barbershop-loop.mp4',
-    alt:    'Barbershop booking flow demo'
-  },
-  {
-    id: 'pt',
-    label: 'Realtor',
-    poster: 'assets/previews/realtor-loop.jpg',
-    video:  'assets/previews/realtor-loop.mov',
-    alt:    'Realtor site demo'
-  },
-];
+  previewItems = [
+    {
+      id: 'barbershop',
+      label: 'Barbershop',
+      poster: 'assets/previews/barbershop-poster.jpg',
+      video:  'assets/previews/barbershop-loop.mp4',
+      alt:    'Barbershop booking flow demo'
+    },
+    {
+      id: 'pt',
+      label: 'Realtor',
+      poster: 'assets/previews/realtor-loop.jpg',
+      video:  'assets/previews/realtor-loop.mov', // consider LFS or a smaller mp4/webm
+      alt:    'Realtor site demo'
+    },
+  ];
 
   // perf/loop state
   private isBrowser = false;
@@ -78,92 +80,115 @@ previewItems = [
     if (this.isBrowser && 'matchMedia' in window) {
       this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
-    
   }
 
-  
-ngAfterViewInit(): void {
-  if (!this.isBrowser) return;
+  ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
 
-  // ---------- Typewriter ----------
-  if (this.tw) {
-    const el = this.tw.nativeElement;
+    // ---------- Splash intro (fade into site) ----------
+    const minShow = 1300; // minimum splash display for smoothness
+    const start = performance.now();
 
-    if (this.reduceMotion) {
-      el.textContent = this.phrases[0];
-    } else {
-      this.zone.runOutsideAngular(() => {
-        const step = (t: number) => {
-          if (t >= this.nextAt) {
-            const phrase = this.phrases[this.phraseIdx];
+    const onReady = () => {
+      const elapsed = performance.now() - start;
+      const delay = Math.max(0, minShow - elapsed);
 
-            if (!this.deleting) {
-              this.charIdx = Math.min(this.charIdx + 1, phrase.length);
-              el.textContent = phrase.slice(0, this.charIdx);
-              this.nextAt = t + (this.charIdx === phrase.length ? this.holdEnd : this.typeMs);
-              if (this.charIdx === phrase.length) this.deleting = true;
-            } else {
-              this.charIdx = Math.max(this.charIdx - 1, 0);
-              el.textContent = phrase.slice(0, this.charIdx);
-              if (this.charIdx === 0) {
-                this.deleting = false;
-                this.phraseIdx = (this.phraseIdx + 1) % this.phrases.length;
-                this.nextAt = t + this.holdStart;
-              } else {
-                this.nextAt = t + this.deleteMs;
-              }
-            }
-          }
-          this.rafId = requestAnimationFrame(step);
-        };
+      setTimeout(() => {
+        // Hide splash, reveal site
+        this.splash.set(false);
+        this.siteReady.set(true);
+      }, delay);
+    };
 
-        this.nextAt = performance.now() + this.typeMs;
-        this.rafId = requestAnimationFrame(step);
-      });
-    }
-  }
+    const fontPromise =
+      ('fonts' in document) ? (document as any).fonts.ready : Promise.resolve();
 
-  // ---------- Reveal on scroll ----------
-  if (!('IntersectionObserver' in window)) {
-    // Fallback: reveal immediately
-    document.querySelectorAll('#team, .about-capsule, .work-frame.reveal')
-      .forEach(el => el.classList.add(el.classList.contains('reveal') ? 'in' : 'in-view'));
-    return;
-  }
-
-  // Defer one tick so negative margins & layout are finalized
-  setTimeout(() => {
-    const targets: Element[] = Array.from(
-      document.querySelectorAll('#team, .about-capsule, .work-frame.reveal')
-    );
-    if (!targets.length) return;
-
-    const io = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-
-        const el = entry.target as HTMLElement;
-
-        if (el.id === 'team' || el.classList.contains('team')) {
-          el.classList.add('in-view');          // Team section fade-in
-        } else if (el.classList.contains('about-capsule')) {
-          el.classList.add('in-view');          // About capsule fade-in
-        } else if (el.classList.contains('reveal')) {
-          el.classList.add('in');               // Work-frame reveal
-        }
-
-        io.unobserve(el);                       // Fire once per element
-      }
-    }, {
-      threshold: 0.05,                          // trigger earlier
-      rootMargin: '0px 0px -10% 0px'            // start before fully in view
+    const loadPromise = new Promise<void>((resolve) => {
+      if (document.readyState === 'complete') return resolve();
+      window.addEventListener('load', () => resolve(), { once: true });
+      // hard cap in case some script stalls load
+      setTimeout(() => resolve(), 2500);
     });
 
-    targets.forEach(t => io.observe(t));
-  }, 0);
-}
+    Promise.all([fontPromise, loadPromise]).then(() => this.zone.run(onReady));
 
+    // ---------- Typewriter ----------
+    if (this.tw) {
+      const el = this.tw.nativeElement;
 
+      if (this.reduceMotion) {
+        el.textContent = this.phrases[0];
+      } else {
+        this.zone.runOutsideAngular(() => {
+          const step = (t: number) => {
+            if (t >= this.nextAt) {
+              const phrase = this.phrases[this.phraseIdx];
+
+              if (!this.deleting) {
+                this.charIdx = Math.min(this.charIdx + 1, phrase.length);
+                el.textContent = phrase.slice(0, this.charIdx);
+                this.nextAt = t + (this.charIdx === phrase.length ? this.holdEnd : this.typeMs);
+                if (this.charIdx === phrase.length) this.deleting = true;
+              } else {
+                this.charIdx = Math.max(this.charIdx - 1, 0);
+                el.textContent = phrase.slice(0, this.charIdx);
+                if (this.charIdx === 0) {
+                  this.deleting = false;
+                  this.phraseIdx = (this.phraseIdx + 1) % this.phrases.length;
+                  this.nextAt = t + this.holdStart;
+                } else {
+                  this.nextAt = t + this.deleteMs;
+                }
+              }
+            }
+            this.rafId = requestAnimationFrame(step);
+          };
+
+          this.nextAt = performance.now() + this.typeMs;
+          this.rafId = requestAnimationFrame(step);
+        });
+      }
+    }
+
+    // ---------- Reveal on scroll ----------
+    if (!('IntersectionObserver' in window)) {
+      // Fallback: reveal immediately
+      document.querySelectorAll('#team, .about-capsule, .work-frame.reveal')
+        .forEach(el => el.classList.add(el.classList.contains('reveal') ? 'in' : 'in-view'));
+      return;
+    }
+
+    // Defer one tick so negative margins & layout are finalized
+    setTimeout(() => {
+      const targets: Element[] = Array.from(
+        document.querySelectorAll('#team, .about-capsule, .work-frame.reveal')
+      );
+      if (!targets.length) return;
+
+      const io = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+
+          const el = entry.target as HTMLElement;
+
+          if (el.id === 'team' || el.classList.contains('team')) {
+            el.classList.add('in-view');          // Team section fade-in
+          } else if (el.classList.contains('about-capsule')) {
+            el.classList.add('in-view');          // About capsule fade-in
+          } else if (el.classList.contains('reveal')) {
+            el.classList.add('in');               // Work-frame reveal
+          }
+
+          io.unobserve(el);                       // Fire once per element
+        }
+      }, {
+        threshold: 0.05,                          // trigger earlier
+        rootMargin: '0px 0px -10% 0px'            // start before fully in view
+      });
+
+      targets.forEach(t => io.observe(t));
+    }, 0);
+  }
 
   ngOnDestroy(): void {
     if (this.rafId) cancelAnimationFrame(this.rafId);

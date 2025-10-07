@@ -1,3 +1,13 @@
+<!-- ✨ Intro Splash (full-screen) -->
+<div class="splash" [class.splash--hide]="!splash()"
+     role="status" aria-live="polite" aria-label="Loading">
+  <div class="splash__inner">
+    <img src="assets/logo/NoWordsNoBackgroundLogo.png" alt="" class="splash__logo" />
+    <div class="splash__spinner" aria-hidden="true"></div>
+    <p class="splash__tag">Visionary Lodge</p>
+  </div>
+</div>
+
 <!-- ======== HERO ======== -->
 <section
   style="
@@ -14,6 +24,7 @@
     color: #e8eefc;
   "
   aria-label="Hero"
+  id="home"
 >
   <!-- Grid glow -->
   <svg
@@ -65,9 +76,10 @@
 
   <!-- Universal dropdown menu -->
   <nav id="mobile-menu" class="mobile-menu" [class.open]="mobileOpen" aria-label="Main">
-    <a (click)="closeMobile()" href="#talking">Work</a>
-    <a (click)="closeMobile()" href="#team">About</a>
-    <a (click)="closeMobile()" href="#contact">Contact</a>
+    <a (click)="closeMobile()" href="#home">Home</a>
+    <a (click)="closeMobile()" href="#team">Meet The Team</a>
+    <a (click)="closeMobile()" href="#projects">Projects</a>
+    <a (click)="closeMobile()" href="#packages">Packages</a>
   </nav>
 </header>
 
@@ -106,11 +118,8 @@
         </p>
 
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <a
-            href="#talking"
-            style="display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg,#7aa2ff 0%,#5ef1c0 100%); color:#0b0f17; text-decoration:none; font-weight:600; box-shadow:0 12px 32px rgba(122,162,255,.25);"
-            >See my work</a
-          >
+        <a href="#projects" class="see-work-btn">See my work</a>
+
 
 
         </div>
@@ -138,7 +147,6 @@
   ></div>
 </section>
 
-<!-- ======== About The Team      ======== -->
 <!-- ======== TEAM ======== -->
 <section id="team" class="team" aria-label="Meet the Team">
   <div class="wrap">
@@ -196,7 +204,7 @@
 
 
 <!-- ======== WORK SHOWCASE ======== -->
-<section id="talking" class="work-showcase" aria-label="Let my work do the talking">
+<section id="projects" class="work-showcase" aria-label="Let my work do the talking">
   <!-- soft grid / glow background -->
   <svg class="bg-grid" width="1320" height="1320" viewBox="0 0 1320 1320" aria-hidden="true">
     <defs>
@@ -242,13 +250,13 @@
 </section>
 
 <!-- ======== ABOUT CAPSULE ======== -->
-<app-about-capsule></app-about-capsule>
+<app-about-capsule id="packages"></app-about-capsule>
 
 
 
 
 <!-- ======== CONTACT CTA ======== -->
-<section id="contact" style="background:#0e1220; color:#e8eefc; padding: 0 20px 80px;">
+<section style="background:#0e1220; color:#e8eefc; padding: 0 20px 80px;">
   <div
     class="reveal-up" 
     style="
@@ -261,7 +269,7 @@
       backdrop-filter: blur(6px) saturate(120%);
     "
   >
-    <div style="padding:24px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;">
+    <!-- <div style="padding:24px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;">
       <div>
         <h3 style="margin:0 0 6px;">Let’s build something great</h3>
         <p style="margin:0; color:#b7c5ff;">Email <a href="mailto:you@yourname.dev" style="color:#9ac1ff;"></a> or send a brief.</p>
@@ -270,7 +278,7 @@
         href="mailto:you@yourname.dev?subject=Project%20Inquiry"
         style="display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg,#7aa2ff 0%,#5ef1c0 100%); color:#0b0f17; text-decoration:none; font-weight:600; box-shadow:0 12px 32px rgba(122,162,255,.25);"
       >Contact Us</a>
-    </div>
+    </div> -->
   </div>
 </section>
 
