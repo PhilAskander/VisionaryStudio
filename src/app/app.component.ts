@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tw', { static: false }) tw!: ElementRef<HTMLElement>;
 
   private phrases = [
-    'Welcome to Visionary Studio!',
+    'Welcome to Visionary Lodge!',
     'Futuristic, fast, and finely crafted web experiences.',
     'Angular + TypeScript for high-performance apps.',
     'Beautiful, accessible, production-ready frontends.'
@@ -50,7 +50,7 @@ previewItems = [
     id: 'pt',
     label: 'Realtor',
     poster: 'assets/previews/realtor-loop.jpg',
-    video:  'assets/previews/realtor-loop.mp4',
+    video:  'assets/previews/realtor-loop.mov',
     alt:    'Realtor site demo'
   },
 ];
@@ -124,33 +124,45 @@ ngAfterViewInit(): void {
   }
 
   // ---------- Reveal on scroll ----------
-  if (!('IntersectionObserver' in window)) return;
+  if (!('IntersectionObserver' in window)) {
+    // Fallback: reveal immediately
+    document.querySelectorAll('#team, .about-capsule, .work-frame.reveal')
+      .forEach(el => el.classList.add(el.classList.contains('reveal') ? 'in' : 'in-view'));
+    return;
+  }
 
-  const targets: Element[] = Array.from(
-    document.querySelectorAll('.work-frame.reveal, .team')
-  );
+  // Defer one tick so negative margins & layout are finalized
+  setTimeout(() => {
+    const targets: Element[] = Array.from(
+      document.querySelectorAll('#team, .about-capsule, .work-frame.reveal')
+    );
+    if (!targets.length) return;
 
-  if (targets.length === 0) return;
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
 
-  const io = new IntersectionObserver((entries, observer) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
 
-      const el = entry.target as HTMLElement;
+        if (el.id === 'team' || el.classList.contains('team')) {
+          el.classList.add('in-view');          // Team section fade-in
+        } else if (el.classList.contains('about-capsule')) {
+          el.classList.add('in-view');          // About capsule fade-in
+        } else if (el.classList.contains('reveal')) {
+          el.classList.add('in');               // Work-frame reveal
+        }
 
-      // Apply the appropriate class to each target
-      if (el.classList.contains('team')) {
-        el.classList.add('in-view');      // for your team fade-in
-      } else if (el.classList.contains('reveal')) {
-        el.classList.add('in');           // for your work-frame reveal
+        io.unobserve(el);                       // Fire once per element
       }
+    }, {
+      threshold: 0.05,                          // trigger earlier
+      rootMargin: '0px 0px -10% 0px'            // start before fully in view
+    });
 
-      observer.unobserve(el);             // fire once per element
-    }
-  }, { threshold: 0.2 });
-
-  targets.forEach(t => io.observe(t));
+    targets.forEach(t => io.observe(t));
+  }, 0);
 }
+
 
 
   ngOnDestroy(): void {

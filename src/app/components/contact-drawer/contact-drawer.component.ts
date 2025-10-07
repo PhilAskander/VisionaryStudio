@@ -46,26 +46,51 @@ export class ContactDrawerComponent {
     if (this.open()) this.close();
   }
 
-  submit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+status = '';
+loading = false;
 
-    // TODO: replace with real submit (API/Email)
-    const data = this.form.getRawValue();
-    console.log('Contact form submit:', data);
-
-    // Quick fallback: open a mailto draft
-    const subject = encodeURIComponent('Project inquiry — Visionary Studios');
-    const body = encodeURIComponent(
-      `Name: ${data.firstName} ${data.lastName}\nEmail: ${data.email}\n\n${data.message}`
-    );
-    if (this.isBrowser) {
-      window.open(`mailto:hello@visionarystudios.dev?subject=${subject}&body=${body}`, '_blank');
-    }
-
-    this.form.reset();
-    this.close();
+async submit(): Promise<void> {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  // Build payload from the reactive form
+  const payload = {
+    access_key: 'aba8e28f-e7a9-4afc-a462-f653d7c7c507', // Web3Forms key
+    ...this.form.getRawValue(),                         // firstName, lastName, email, message
+    // Optional extras Web3Forms supports:
+    // from_name: 'Visionary Lodges',
+    // subject: `New inquiry from ${this.form.value.firstName} ${this.form.value.lastName}`,
+  };
+
+  this.status = 'Please wait…';
+  this.loading = true;
+
+  try {
+    const resp = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await resp.json() as { message?: string; };
+    if (resp.ok) {
+      this.status = 'Form submitted successfully';
+      this.form.reset();
+      this.close();
+      setTimeout(() => (this.status = ''), 3000);
+    } else {
+      console.error('Submit error:', resp, data);
+      this.status = data?.message ?? 'Submission failed';
+    }
+  } catch (err) {
+    console.error('Network/Runtime error:', err);
+    this.status = 'Something went wrong!';
+  } finally {
+    this.loading = false;
+  }
+}
+
+
 }
